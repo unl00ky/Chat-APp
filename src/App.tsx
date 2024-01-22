@@ -15,45 +15,39 @@ import {
   // MESSAGES_ENDPOINT,
 } from "./constants/URL";
 
-interface Iuser {
-  id: string;
-  name: string;
-  password: string;
-}
-interface Idiscussion {
-  id?: string;
-  contacts: [];
-  name?: string;
-  group_name?: string;
-  status?: string;
-}
-
 function App() {
-  const [connectedUser, setConnectedUser] = useState<Iuser>();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [contacts, setContacts] = useState<Iuser[]>([]);
+
+  const [connectedUser, setConnectedUser] = useState<Iuser>();
   const [userDiscussions, setUserDiscussions] = useState<Idiscussion[]>([]);
-  const [selectedDiscussion, setSelectedDiscussion] = useState<Idiscussion>();
   // const [userMessages, setUserMessages] = useState([]);
+  // const [discussionMessages, setDiscussionMessages] = useState([]);
 
   const getContacts = async () => {
-    const response = await fetch(CONTACTS_ENDPOINT);
-    const data = await response.json();
-    setContacts(data);
+    try {
+      const response = await fetch(CONTACTS_ENDPOINT);
+      if (!response.ok)
+        throw new Error("There was an error when tryng to get contacts");
+      const data = await response.json();
+      setContacts(data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const getDiscussions = async (user_id: string | undefined) => {
     const correctURL = `${DISCUSSIONS_ENDPOINT}/?user_id=${user_id}`;
 
-    const response = await fetch(correctURL);
-    const data = await response.json();
-    setUserDiscussions(data);
+    try {
+      const response = await fetch(correctURL);
+      if (!response.ok)
+        throw new Error("there was a problem at getting user discussion");
+      const data = await response.json();
+      setUserDiscussions(data);
+    } catch (err) {
+      console.error(err);
+    }
   };
-  // const getMessages = async (discusson_id: string | undefined) => {
-  //   const response = await fetch(MESSAGES_ENDPOINT);
-  //   const data = await response.json();
-  //   setUserMessages(data);
-  // };
 
   useEffect(() => {
     if (connectedUser !== undefined) {
@@ -65,20 +59,20 @@ function App() {
     <>
       <MantineProvider theme={theme}>
         <Navbar
-          isLoggedIn={isLoggedIn}
-          logFunction={setIsLoggedIn}
-          contacts={contacts}
           connectedUser={connectedUser}
           setConnectedUser={setConnectedUser}
+          contacts={contacts}
           getDiscussions={getDiscussions}
         />
         <main className="mx-2 flex gap-2 h-[calc(100vh-10vh)]">
           <DiscussionsList
-            isLoggedIn={isLoggedIn}
+            connectedUser={connectedUser}
             userDiscussions={userDiscussions}
+            setDiscussionMessages={setDiscussionMessages}
           />
-          <ChatWindow isLoggedIn={isLoggedIn} />
+          <ChatWindow connectedUser={connectedUser} />
         </main>
+        ;
       </MantineProvider>
     </>
   );

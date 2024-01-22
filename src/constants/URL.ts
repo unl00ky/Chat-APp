@@ -1,7 +1,5 @@
 const PORT = 8000;
-// const DOMAIN = "192.168.1.109"
 const DOMAIN = "localhost";
-
 
 const BASE_URL = `http://${DOMAIN}:${PORT}`;
 
