@@ -18,7 +18,7 @@ interface IProps {
   contacts: Iuser[];
   connectedUser: Iuser | undefined;
   setConnectedUser: (arg: Iuser | undefined) => void;
-  getDiscussions: (arg: string | undefined) => void;
+  getDiscussions: (arg: string) => void;
 }
 
 export const Navbar = ({
@@ -83,6 +83,7 @@ export const Navbar = ({
     if (data) console.log(data);
     contactsClose();
     getDiscussions(connectedUser?.id);
+
   };
 
   return (
