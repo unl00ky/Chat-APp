@@ -1,65 +1,45 @@
-import { Avatar, Select } from "@mantine/core";
+import { Avatar } from "@mantine/core";
 
 import { useState } from "react";
 
-import { MESSAGES_ENDPOINT } from "../constants/URL";
-
-interface Idiscussion {
-  id?: string;
-  contacts: [];
-  name?: string;
-  group_name?: string;
-  status?: string;
-}
-
 interface IProps {
-  isLoggedIn: boolean;
+  connectedUser: Iuser | null;
   userDiscussions: Idiscussion[];
-  setDiscussionMessages: (arg: []) => void;
 }
 
-export const DiscussionsList = ({
-  isLoggedIn,
-  userDiscussions,
-  setDiscussionMessages,
-}: IProps) => {
-  const [selectedDiscussion, setSelectedDiscussion] = useState<Idiscussion>();
+export const DiscussionsList = ({ connectedUser, userDiscussions }: IProps) => {
+  const [activeDiscussion, setActiveDiscussion] = useState<number | null>(null);
 
-  const getMessages = async (discusson_id: string | undefined) => {
-    const url = `${MESSAGES_ENDPOINT}/?discussion_id=${discusson_id}`;
-    const response = await fetch(url);
-    const data = await response.json();
-    setDiscussionMessages(data);
+  const handleActiveDiscussion = (index: number) => {
+    setActiveDiscussion((prev) => (prev === index ? null : index));
   };
 
   return (
     <aside className="bg-primary text-white p-4 rounded-lg overflow-auto w-full max-w-[30%] h-full">
-      <ul className="">
-        {isLoggedIn && (
-          <Select
-            label="Discussions"
-            placeholder="Select a discussion"
-            data={userDiscussions.map((discussion) => {
-              return { value: discussion.id, label: discussion.name };
-            })}
-            maxDropdownHeight={200}
-            dropdownOpened
-            clearable
-            onChange={(selectedDiscussion) => {
-              getMessages(selectedDiscussion);
-            }}
-            style={{ backgroundColor: "transparent" }}
-          />
-        )}
-        {!isLoggedIn && (
-          <div>
-            <Avatar className="mx-auto mb-4 w-64 h-64" />
-            <p className="mx-auto text-3xl font-bold bg-secondary w-fit py-2 px-4 rounded-lg">
-              Please log in
-            </p>
-          </div>
-        )}
-      </ul>
+      {connectedUser ? (
+        <ul>
+          {userDiscussions.map((discussion, index) => {
+            return (
+              <li
+                key={discussion.id}
+                onClick={() => handleActiveDiscussion(index)}
+                className={`${
+                  activeDiscussion === index ? "bg-light-blue" : "bg-secondary"
+                } w-full  rounded-lg py-2 px-4 hover:bg-hover transition-all cursor-pointer mb-2`}
+              >
+                {discussion.name}
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <div>
+          <Avatar className="mx-auto mb-4 w-64 h-64" />
+          <p className="mx-auto text-3xl font-bold bg-secondary w-fit py-2 px-4 rounded-lg">
+            Please log in
+          </p>
+        </div>
+      )}
     </aside>
   );
 };

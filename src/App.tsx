@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
 import { Navbar } from "./components/Navbar";
 import { DiscussionsList } from "./components/DiscussionsList";
-import { ChatWindow } from "./components/ChatWindow";
+// import { ChatWindow } from "./components/ChatWindow";
 
 import {
   CONTACTS_ENDPOINT,
@@ -18,7 +18,7 @@ import {
 function App() {
   const [contacts, setContacts] = useState<Iuser[]>([]);
 
-  const [connectedUser, setConnectedUser] = useState<Iuser>();
+  const [connectedUser, setConnectedUser] = useState<Iuser | null>(null);
   const [userDiscussions, setUserDiscussions] = useState<Idiscussion[]>([]);
   // const [userMessages, setUserMessages] = useState([]);
   // const [discussionMessages, setDiscussionMessages] = useState([]);
@@ -36,10 +36,11 @@ function App() {
   };
 
   const getDiscussions = async (user_id: string | undefined) => {
-    const correctURL = `${DISCUSSIONS_ENDPOINT}/?user_id=${user_id}`;
+    const url = `${DISCUSSIONS_ENDPOINT}/?user_id=${user_id}`;
+    if (user_id === undefined) return;
 
     try {
-      const response = await fetch(correctURL);
+      const response = await fetch(url);
       if (!response.ok)
         throw new Error("there was a problem at getting user discussion");
       const data = await response.json();
@@ -50,7 +51,7 @@ function App() {
   };
 
   useEffect(() => {
-    if (connectedUser !== undefined) {
+    if (connectedUser) {
       getContacts();
       getDiscussions(connectedUser?.id);
     }
@@ -68,9 +69,8 @@ function App() {
           <DiscussionsList
             connectedUser={connectedUser}
             userDiscussions={userDiscussions}
-            setDiscussionMessages={setDiscussionMessages}
           />
-          <ChatWindow connectedUser={connectedUser} />
+          {/* <ChatWindow connectedUser={connectedUser} /> */}
         </main>
         ;
       </MantineProvider>

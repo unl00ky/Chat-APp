@@ -8,7 +8,7 @@ import { Button } from "./Button";
 import { AUTHENTICATE_ENDPOINT } from "../constants/URL";
 
 interface IProps {
-  setConnectedUser: (arg: Iuser | undefined) => void;
+  setConnectedUser: (arg: Iuser | null) => void;
 }
 
 export const LogInNav = ({ setConnectedUser }: IProps) => {

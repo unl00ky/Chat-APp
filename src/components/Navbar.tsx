@@ -11,8 +11,8 @@ import { DISCUSSIONS_ENDPOINT } from "../constants/URL";
 
 interface IProps {
   contacts: Iuser[];
-  connectedUser: Iuser | undefined;
-  setConnectedUser: (arg: Iuser | undefined) => void;
+  connectedUser: Iuser | null;
+  setConnectedUser: (arg: Iuser | null) => void;
   getDiscussions: (arg: string) => void;
 }
 
@@ -49,9 +49,14 @@ export const Navbar = ({
       console.log("discussion data: ", data);
       if (connectedUser) getDiscussions(connectedUser.id);
       setSelectedContacts([]);
+      contactsClose();
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const logOut = () => {
+    setConnectedUser(null);
   };
 
   return (
@@ -111,7 +116,7 @@ export const Navbar = ({
             <Avatar size="md" className="mx-4">
               {connectedUser?.name.charAt(0).toUpperCase()}
             </Avatar>
-            <Button>
+            <Button click={logOut}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
