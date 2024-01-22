@@ -12,3 +12,11 @@ interface Idiscussion {
   status?: string;
 }
 
+interface Imessage {
+  id: string;
+  discussion_id: string;
+  user_id: string;
+  value: string;
+  date: string;
+  name: string;
+}

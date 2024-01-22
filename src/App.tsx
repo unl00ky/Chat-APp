@@ -7,12 +7,12 @@ import { useEffect, useState } from "react";
 
 import { Navbar } from "./components/Navbar";
 import { DiscussionsList } from "./components/DiscussionsList";
-// import { ChatWindow } from "./components/ChatWindow";
+import { ChatWindow } from "./components/ChatWindow";
 
 import {
   CONTACTS_ENDPOINT,
   DISCUSSIONS_ENDPOINT,
-  // MESSAGES_ENDPOINT,
+  MESSAGES_ENDPOINT,
 } from "./constants/URL";
 
 function App() {
@@ -20,8 +20,11 @@ function App() {
 
   const [connectedUser, setConnectedUser] = useState<Iuser | null>(null);
   const [userDiscussions, setUserDiscussions] = useState<Idiscussion[]>([]);
-  // const [userMessages, setUserMessages] = useState([]);
-  // const [discussionMessages, setDiscussionMessages] = useState([]);
+  const [activeDiscussion, setActiveDiscussion] = useState<Idiscussion | null>(
+    null
+  );
+
+  const [discussionMessages, setDiscussionMessages] = useState<Imessage[]>([]);
 
   const getContacts = async () => {
     try {
@@ -50,6 +53,18 @@ function App() {
     }
   };
 
+  const getMessages = async (discussion_id: string | undefined) => {
+    const url = `${MESSAGES_ENDPOINT}/?discussion_id=${discussion_id}`;
+    try {
+      const response = await fetch(url);
+      if (!response.ok)
+        throw new Error("There was a problem when getting discussion messages");
+      const data = await response.json();
+      setDiscussionMessages(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   useEffect(() => {
     if (connectedUser) {
       getContacts();
@@ -69,8 +84,15 @@ function App() {
           <DiscussionsList
             connectedUser={connectedUser}
             userDiscussions={userDiscussions}
+            setActiveDiscussion={setActiveDiscussion}
+            getMessages={getMessages}
           />
-          {/* <ChatWindow connectedUser={connectedUser} /> */}
+          <ChatWindow
+            connectedUser={connectedUser}
+            discussionMessages={discussionMessages}
+            activeDiscussion={activeDiscussion}
+            getMessages={getMessages}
+          />
         </main>
         ;
       </MantineProvider>

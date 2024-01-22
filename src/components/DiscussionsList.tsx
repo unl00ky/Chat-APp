@@ -1,17 +1,27 @@
 import { Avatar } from "@mantine/core";
-
 import { useState } from "react";
 
 interface IProps {
   connectedUser: Iuser | null;
   userDiscussions: Idiscussion[];
+  setActiveDiscussion: React.Dispatch<React.SetStateAction<Idiscussion | null>>;
+  getMessages: (arg: string | undefined) => void;
 }
 
-export const DiscussionsList = ({ connectedUser, userDiscussions }: IProps) => {
-  const [activeDiscussion, setActiveDiscussion] = useState<number | null>(null);
+export const DiscussionsList = ({
+  connectedUser,
+  userDiscussions,
+  setActiveDiscussion,
+  getMessages,
+}: IProps) => {
+  const [selectedDiscussion, setSelectedDiscussion] = useState<number | null>(
+    null
+  );
 
-  const handleActiveDiscussion = (index: number) => {
-    setActiveDiscussion((prev) => (prev === index ? null : index));
+  const handleActiveDiscussion = (discussion: Idiscussion, index: number) => {
+    setSelectedDiscussion((prev) => (prev === index ? null : index));
+    setActiveDiscussion(discussion);
+    getMessages(discussion.id);
   };
 
   return (
@@ -22,9 +32,11 @@ export const DiscussionsList = ({ connectedUser, userDiscussions }: IProps) => {
             return (
               <li
                 key={discussion.id}
-                onClick={() => handleActiveDiscussion(index)}
+                onClick={() => handleActiveDiscussion(discussion, index)}
                 className={`${
-                  activeDiscussion === index ? "bg-light-blue" : "bg-secondary"
+                  selectedDiscussion === index
+                    ? "bg-light-blue"
+                    : "bg-secondary"
                 } w-full  rounded-lg py-2 px-4 hover:bg-hover transition-all cursor-pointer mb-2`}
               >
                 {discussion.name}
