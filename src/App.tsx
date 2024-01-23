@@ -5,6 +5,8 @@ import "@mantine/core/styles.css";
 
 import { useEffect, useState } from "react";
 
+// import { io } from "socket.io-client";
+
 import { Navbar } from "./components/Navbar";
 import { DiscussionsList } from "./components/DiscussionsList";
 import { ChatWindow } from "./components/ChatWindow";
@@ -13,6 +15,7 @@ import {
   CONTACTS_ENDPOINT,
   DISCUSSIONS_ENDPOINT,
   MESSAGES_ENDPOINT,
+  AUTHENTICATE_ENDPOINT,
 } from "./constants/URL";
 
 function App() {
@@ -65,10 +68,51 @@ function App() {
       console.log(err);
     }
   };
+  // const url = `ws://localhost:8000`;
+
+  // const socket = io(`http://localhost:8000/ws/${connectedUser?.id}`);
+  // useEffect(() => {
+  //   socket.on("connection", (connect: any) => {
+  //     console.log("Connected", connect);
+  //   });
+
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // });
+
+  const log = async (usernameSaved: string, passwordSaved: string) => {
+    const body = {
+      name: usernameSaved,
+      password: passwordSaved,
+    };
+    try {
+      const response = await fetch(AUTHENTICATE_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!response.ok)
+        throw new Error(
+          "There was a problem when tryng to get the saved login data"
+        );
+      const data = await response.json();
+      console.log("try this");
+      setConnectedUser(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
   useEffect(() => {
+    const usernameSaved = localStorage.getItem("username");
+    const passwordSaved = localStorage.getItem("password");
+    if (usernameSaved && passwordSaved) log(usernameSaved, passwordSaved);
+
     if (connectedUser) {
       getContacts();
       getDiscussions(connectedUser?.id);
+      setDiscussionMessages([]);
+      setActiveDiscussion(null);
     }
   }, [connectedUser]);
   return (
@@ -79,6 +123,8 @@ function App() {
           setConnectedUser={setConnectedUser}
           contacts={contacts}
           getDiscussions={getDiscussions}
+          setDiscussionMessages={setDiscussionMessages}
+          setActiveDiscussion={setActiveDiscussion}
         />
         <main className="mx-2 flex gap-2 h-[calc(100vh-10vh)]">
           <DiscussionsList

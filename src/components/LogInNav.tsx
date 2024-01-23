@@ -37,6 +37,9 @@ export const LogInNav = ({ setConnectedUser }: IProps) => {
       const data = await response.json();
       console.log("data", data);
 
+      window.localStorage.setItem("username", username);
+      window.localStorage.setItem("password", password);
+
       setConnectedUser(data);
       authClose();
       setUsername("");

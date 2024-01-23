@@ -14,6 +14,8 @@ interface IProps {
   connectedUser: Iuser | null;
   setConnectedUser: (arg: Iuser | null) => void;
   getDiscussions: (arg: string) => void;
+  setDiscussionMessages: (arg: Imessage[]) => void;
+  setActiveDiscussion: (arg: Idiscussion | null) => void;
 }
 
 export const Navbar = ({
@@ -21,6 +23,8 @@ export const Navbar = ({
   connectedUser,
   setConnectedUser,
   getDiscussions,
+  setDiscussionMessages,
+  setActiveDiscussion,
 }: IProps) => {
   const [contactsOpened, { open: contactsOpen, close: contactsClose }] =
     useDisclosure(false);
@@ -56,7 +60,13 @@ export const Navbar = ({
   };
 
   const logOut = () => {
-    setConnectedUser(null);
+    window.localStorage.removeItem("username");
+    window.localStorage.removeItem("password");
+    setTimeout(() => {
+      setConnectedUser(null);
+      setDiscussionMessages([]);
+      setActiveDiscussion(null);
+    }, 100);
   };
 
   return (

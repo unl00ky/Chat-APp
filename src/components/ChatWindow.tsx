@@ -4,7 +4,7 @@ import { Button } from "./Button";
 import { Message } from "./Message";
 
 import { MESSAGES_ENDPOINT } from "../constants/URL";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface IProps {
   connectedUser: Iuser | null;
@@ -49,10 +49,25 @@ export const ChatWindow = ({
     getMessages(activeDiscussion.id);
   };
 
+  const chatMessaagesWindow = useRef(null);
+  const scrollToBottom = () => {
+    if (chatMessaagesWindow.current) {
+      chatMessaagesWindow.current.scrollTop =
+        chatMessaagesWindow.current.scrollHeight;
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [discussionMessages]);
+
   return (
     <>
       <section className="w-full flex flex-col gap-2">
-        <section className=" bg-primary text-white rounded-lg p-4 h-full">
+        <section
+          ref={chatMessaagesWindow}
+          className=" bg-primary text-white rounded-lg p-4 h-full overflow-auto"
+        >
           {connectedUser && (
             <div>
               {discussionMessages.map((message) => {

@@ -6,3 +6,28 @@ body {
   background-color: black;
   overflow: hidden;
 }
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-button {
+  width: 0px;
+  height: 0px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c4c4c4;
+  border: 0;
+  border-radius: 1rem;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(19, 17, 18, 0.3);
+  border: 0;
+  border-radius: 0px;
+}
