@@ -1,10 +1,10 @@
 import { Alert } from "@mantine/core";
 
+import { useEffect, useRef, useState } from "react";
+
 import { Button } from "./Button";
 import { Message } from "./Message";
-
 import { MESSAGES_ENDPOINT } from "../constants/URL";
-import { useEffect, useRef, useState } from "react";
 
 interface IProps {
   connectedUser: Iuser | null;
@@ -54,6 +54,7 @@ export const ChatWindow = ({
     if (chatMessaagesWindow.current) {
       chatMessaagesWindow.current.scrollTop =
         chatMessaagesWindow.current.scrollHeight;
+      // idk what to do
     }
   };
 

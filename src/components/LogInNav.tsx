@@ -1,10 +1,9 @@
-import { Modal } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { Modal } from "@mantine/core";
 
 import { useState } from "react";
 
 import { Button } from "./Button";
-
 import { AUTHENTICATE_ENDPOINT } from "../constants/URL";
 
 interface IProps {

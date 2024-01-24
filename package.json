@@ -14,7 +14,7 @@
     "@mantine/hooks": "^7.4.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "socket.io-client": "^4.7.4"
+    "react-use-websocket": "^4.5.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

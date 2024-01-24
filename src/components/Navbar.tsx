@@ -4,9 +4,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
 
 import { Button } from "./Button";
-
 import { LogInNav } from "./LogInNav";
-
 import { DISCUSSIONS_ENDPOINT } from "../constants/URL";
 
 interface IProps {
@@ -43,8 +41,9 @@ export const Navbar = ({
         headers: { "Content-type": "application/json" },
         body: JSON.stringify(body),
       });
+      setSelectedContacts([]);
+
       if (!response.ok) {
-        setSelectedContacts([]);
         setDesc("Discussion already exists");
         setTimeout(setDesc, 3000, "");
         throw new Error("Discussion already exists");
@@ -52,7 +51,6 @@ export const Navbar = ({
       const data = await response.json();
       console.log("discussion data: ", data);
       if (connectedUser) getDiscussions(connectedUser.id);
-      setSelectedContacts([]);
       contactsClose();
     } catch (err) {
       console.log(err);
@@ -62,11 +60,9 @@ export const Navbar = ({
   const logOut = () => {
     window.localStorage.removeItem("username");
     window.localStorage.removeItem("password");
-    setTimeout(() => {
-      setConnectedUser(null);
-      setDiscussionMessages([]);
-      setActiveDiscussion(null);
-    }, 100);
+    setConnectedUser(null);
+    setDiscussionMessages([]);
+    setActiveDiscussion(null);
   };
 
   return (

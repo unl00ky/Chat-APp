@@ -1,11 +1,10 @@
 import { MantineProvider } from "@mantine/core";
-
 import { theme } from "./theme";
 import "@mantine/core/styles.css";
 
 import { useEffect, useState } from "react";
 
-// import { io } from "socket.io-client";
+import useWebSocket from "react-use-websocket";
 
 import { Navbar } from "./components/Navbar";
 import { DiscussionsList } from "./components/DiscussionsList";
@@ -42,8 +41,8 @@ function App() {
   };
 
   const getDiscussions = async (user_id: string | undefined) => {
-    const url = `${DISCUSSIONS_ENDPOINT}/?user_id=${user_id}`;
     if (user_id === undefined) return;
+    const url = `${DISCUSSIONS_ENDPOINT}/?user_id=${user_id}`;
 
     try {
       const response = await fetch(url);
@@ -68,18 +67,6 @@ function App() {
       console.log(err);
     }
   };
-  // const url = `ws://localhost:8000`;
-
-  // const socket = io(`http://localhost:8000/ws/${connectedUser?.id}`);
-  // useEffect(() => {
-  //   socket.on("connection", (connect: any) => {
-  //     console.log("Connected", connect);
-  //   });
-
-  //   return () => {
-  //     socket.disconnect();
-  //   };
-  // });
 
   const log = async (usernameSaved: string, passwordSaved: string) => {
     const body = {
@@ -97,7 +84,6 @@ function App() {
           "There was a problem when tryng to get the saved login data"
         );
       const data = await response.json();
-      console.log("try this");
       setConnectedUser(data);
     } catch (err) {
       console.error(err);
@@ -107,14 +93,27 @@ function App() {
     const usernameSaved = localStorage.getItem("username");
     const passwordSaved = localStorage.getItem("password");
     if (usernameSaved && passwordSaved) log(usernameSaved, passwordSaved);
-
+  }, []);
+  useEffect(() => {
     if (connectedUser) {
       getContacts();
-      getDiscussions(connectedUser?.id);
+      getDiscussions(connectedUser.id);
       setDiscussionMessages([]);
       setActiveDiscussion(null);
     }
   }, [connectedUser]);
+
+  const URL = `ws://localhost:8000/ws/${connectedUser?.id}`;
+  const { lastJsonMessage } = useWebSocket(URL, {
+    share: false,
+    shouldReconnect: () => true,
+  });
+
+  useEffect(() => {
+    console.log("lastjsonmessage", lastJsonMessage);
+    if (lastJsonMessage === "new message") getMessages(activeDiscussion?.id);
+    if (lastJsonMessage === "new discussion") getDiscussions(connectedUser?.id);
+  }, [lastJsonMessage]);
   return (
     <>
       <MantineProvider theme={theme}>
