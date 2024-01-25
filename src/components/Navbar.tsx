@@ -14,6 +14,7 @@ interface IProps {
   getDiscussions: (arg: string) => void;
   setDiscussionMessages: (arg: Imessage[]) => void;
   setActiveDiscussion: (arg: Idiscussion | null) => void;
+  handleDownload: () => void;
 }
 
 export const Navbar = ({
@@ -23,6 +24,7 @@ export const Navbar = ({
   getDiscussions,
   setDiscussionMessages,
   setActiveDiscussion,
+  handleDownload,
 }: IProps) => {
   const [contactsOpened, { open: contactsOpen, close: contactsClose }] =
     useDisclosure(false);
@@ -71,6 +73,9 @@ export const Navbar = ({
       {connectedUser && (
         <>
           <section>
+            <Button click={handleDownload} styles="mr-2">
+              Get messages
+            </Button>
             <Button click={contactsOpen}>New Chat</Button>
             <Modal
               className="text-red-500"

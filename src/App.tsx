@@ -103,8 +103,21 @@ function App() {
     }
   }, [connectedUser]);
 
-  const URL = `ws://localhost:8000/ws/${connectedUser?.id}`;
-  const { lastJsonMessage } = useWebSocket(URL, {
+  const handleDownload = () => {
+    const messages = JSON.stringify(discussionMessages);
+    const blob = new Blob([messages], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "data.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const url = `ws://localhost:8000/ws/${connectedUser?.id}`;
+  const { lastJsonMessage } = useWebSocket(url, {
     share: false,
     shouldReconnect: () => true,
   });
@@ -114,6 +127,7 @@ function App() {
     if (lastJsonMessage === "new message") getMessages(activeDiscussion?.id);
     if (lastJsonMessage === "new discussion") getDiscussions(connectedUser?.id);
   }, [lastJsonMessage]);
+
   return (
     <>
       <MantineProvider theme={theme}>
@@ -124,6 +138,7 @@ function App() {
           getDiscussions={getDiscussions}
           setDiscussionMessages={setDiscussionMessages}
           setActiveDiscussion={setActiveDiscussion}
+          handleDownload={handleDownload}
         />
         <main className="mx-2 flex gap-2 h-[calc(100vh-10vh)]">
           <DiscussionsList
@@ -136,7 +151,6 @@ function App() {
             connectedUser={connectedUser}
             discussionMessages={discussionMessages}
             activeDiscussion={activeDiscussion}
-            getMessages={getMessages}
           />
         </main>
         ;

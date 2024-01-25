@@ -10,14 +10,12 @@ interface IProps {
   connectedUser: Iuser | null;
   discussionMessages: Imessage[];
   activeDiscussion: Idiscussion | null;
-  getMessages: (arg: string | undefined) => void;
 }
 
 export const ChatWindow = ({
   connectedUser,
   discussionMessages,
   activeDiscussion,
-  getMessages,
 }: IProps) => {
   const [message, setMessage] = useState<string>("");
 
@@ -46,7 +44,6 @@ export const ChatWindow = ({
     } catch (err) {
       console.log(err);
     }
-    getMessages(activeDiscussion.id);
   };
 
   const chatMessaagesWindow = useRef(null);
@@ -61,6 +58,21 @@ export const ChatWindow = ({
   useEffect(() => {
     scrollToBottom();
   }, [discussionMessages]);
+
+  const handleDeleteMsg = async (message_id: string) => {
+    const url = `${MESSAGES_ENDPOINT}?message_id=${message_id}&discussion_id=${activeDiscussion?.id}`;
+    try {
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!response.ok)
+        throw new Error("There was a problem when deleting a message");
+    } catch (err) {
+      console.log(err);
+    }
+    console.log("deleted");
+  };
 
   return (
     <>
@@ -77,6 +89,7 @@ export const ChatWindow = ({
                     key={message.id}
                     message={message}
                     isMe={message.user_id === connectedUser?.id}
+                    handleDeleteMsg={handleDeleteMsg}
                   />
                 );
               })}
