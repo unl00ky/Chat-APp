@@ -4,11 +4,10 @@ import "@mantine/core/styles.css";
 
 import { useEffect, useState } from "react";
 
-import useWebSocket from "react-use-websocket";
-
 import { Navbar } from "./components/Navbar";
 import { DiscussionsList } from "./components/DiscussionsList";
 import { ChatWindow } from "./components/ChatWindow";
+import { WebSocket } from "./components/WebSocket";
 
 import {
   CONTACTS_ENDPOINT,
@@ -116,21 +115,17 @@ function App() {
     URL.revokeObjectURL(url);
   };
 
-  const url = `ws://localhost:8000/ws/${connectedUser?.id}`;
-  const { lastJsonMessage } = useWebSocket(url, {
-    share: false,
-    shouldReconnect: () => true,
-  });
-
-  useEffect(() => {
-    console.log("lastjsonmessage", lastJsonMessage);
-    if (lastJsonMessage === "new message") getMessages(activeDiscussion?.id);
-    if (lastJsonMessage === "new discussion") getDiscussions(connectedUser?.id);
-  }, [lastJsonMessage]);
-
   return (
     <>
       <MantineProvider theme={theme}>
+        {connectedUser && (
+          <WebSocket
+            connectedUser={connectedUser.id}
+            getMessages={getMessages}
+            getDiscussions={getDiscussions}
+            activeDiscussion={activeDiscussion?.id}
+          />
+        )}
         <Navbar
           connectedUser={connectedUser}
           setConnectedUser={setConnectedUser}
