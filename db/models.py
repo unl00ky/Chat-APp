@@ -3,13 +3,11 @@ from sqlalchemy import ForeignKey, Table, Column, create_engine, ARRAY, UUID
 from typing import List, Optional
 
 import uuid
+from dotenv import dotenv_values
 
-name = "postgres"
-password = 123
-host = "localhost:5432"
-dbName = "postgres"
+config = dotenv_values(".env")
 
-engine = create_engine(f"postgresql://{name}:{password}@{host}/{dbName}")
+engine = create_engine(f"postgresql://{config["USERNAME"]}:{config["PASSWORD"]}@{config["HOST"]}/{config["DB_NAME"]}")
 
 
 class Base(DeclarativeBase):
@@ -20,7 +18,7 @@ contacts_table = Table(
     "contacts_table",
     Base.metadata,
     Column("discussion_id", ForeignKey("discussion.id")),
-    Column("user_id", ForeignKey("user.id"))
+    Column("user_id", ForeignKey("user.id")),
 )
 
 
@@ -31,7 +29,9 @@ class User(Base):
     name: Mapped[str]
     password: Mapped[str]
 
-    discussions: Mapped[List["Discussion"]] = relationship(secondary=contacts_table, back_populates="contacts")
+    discussions: Mapped[List["Discussion"]] = relationship(
+        secondary=contacts_table, back_populates="contacts"
+    )
     messages: Mapped[List["Message"]] = relationship(back_populates="author")
 
     def __repr__(self):
@@ -51,7 +51,9 @@ class Discussion(Base):
     group_name: Mapped[Optional[str]]
     status: Mapped[Optional[str]]
 
-    contacts: Mapped[List["User"]] = relationship(secondary=contacts_table, back_populates="discussions")
+    contacts: Mapped[List["User"]] = relationship(
+        secondary=contacts_table, back_populates="discussions"
+    )
     messages: Mapped[List["Message"]] = relationship(back_populates="discussion")
 
     def __repr__(self):
